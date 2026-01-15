@@ -1,70 +1,53 @@
-import os
 import random
 
-WIDTH = 20
-HEIGHT = 10
+# Word list
+words = ["python", "developer", "hangman", "programming", "keyboard"]
 
-PLAYER = "👤"
-TREE = "🌳"
-TREASURE = "💎"
-EMPTY = "⬜"
+word = random.choice(words)
+guessed_letters = set()
+lives = 6
 
-player_x = WIDTH // 2
-player_y = HEIGHT // 2
-score = 0
+print("🔤 WELCOME TO HANGMAN 🔤")
+print("Guess the word, one letter at a time.")
+print("You have 6 lives ❤️")
 
-# Create map
-world = [[EMPTY for _ in range(WIDTH)] for _ in range(HEIGHT)]
+while lives > 0:
+    display_word = ""
+    for letter in word:
+        if letter in guessed_letters:
+            display_word += letter + " "
+        else:
+            display_word += "_ "
 
-# Add trees
-for _ in range(25):
-    x = random.randint(0, WIDTH - 1)
-    y = random.randint(0, HEIGHT - 1)
-    world[y][x] = TREE
+    print("\nWord:", display_word)
+    print("Guessed letters:", " ".join(sorted(guessed_letters)))
+    print("Lives left:", lives)
 
-# Add treasures
-for _ in range(5):
-    x = random.randint(0, WIDTH - 1)
-    y = random.randint(0, HEIGHT - 1)
-    world[y][x] = TREASURE
+    guess = input("Guess a letter: ").lower()
 
-def clear():
-    os.system("cls" if os.name == "nt" else "clear")
+    if len(guess) != 1 or not guess.isalpha():
+        print("❌ Please enter ONE letter only.")
+        continue
 
-def draw_world():
-    clear()
-    for y in range(HEIGHT):
-        for x in range(WIDTH):
-            if x == player_x and y == player_y:
-                print(PLAYER, end="")
-            else:
-                print(world[y][x], end="")
-        print()
-    print(f"\n💰 Treasures Collected: {score}")
-    print("Move: W A S D | Quit: Q")
+    if guess in guessed_letters:
+        print("⚠️ You already guessed that letter.")
+        continue
 
-while True:
-    draw_world()
-    move = input("Your move: ").lower()
+    guessed_letters.add(guess)
 
-    new_x, new_y = player_x, player_y
+    if guess in word:
+        print("✅ Good guess!")
+    else:
+        print("❌ Wrong guess!")
+        lives -= 1
 
-    if move == "w":
-        new_y -= 1
-    elif move == "s":
-        new_y += 1
-    elif move == "a":
-        new_x -= 1
-    elif move == "d":
-        new_x += 1
-    elif move == "q":
-        print("👋 Game exited")
+    # Win condition
+    if all(letter in guessed_letters for letter in word):
+        print("\n🎉 YOU WIN!")
+        print("The word was:", word)
         break
 
-    if 0 <= new_x < WIDTH and 0 <= new_y < HEIGHT:
-        if world[new_y][new_x] != TREE:
-            if world[new_y][new_x] == TREASURE:
-                score += 1
-                world[new_y][new_x] = EMPTY
-            player_x, player_y = new_x, new_y
-
+# Lose condition
+if lives == 0:
+    print("\n💀 GAME OVER")
+    print("The word was:", word)
