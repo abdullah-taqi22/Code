@@ -4,7 +4,7 @@ import random
 WIDTH = 20
 HEIGHT = 10
 
-PLAYER = "😀"
+PLAYER = "👤"
 TREE = "🌳"
 TREASURE = "💎"
 EMPTY = "⬜"
